@@ -11,7 +11,6 @@ st.title("🔍 US Crime Rate Predictor")
 st.markdown("""This app uses a **Logistic Regression model trained with SMOTE oversampling** 
 to predict whether a community has a **high violent crime rate**.""")
 
-# ชื่อ feature จริงจาก UCI Communities and Crime dataset
 FEATURE_NAMES = [
     "population", "householdsize", "racepctblack", "racePctWhite", "racePctAsian",
     "racePctHisp", "agePct12t21", "agePct12t29", "agePct16t24", "agePct65up",
@@ -138,7 +137,6 @@ FEATURE_DESCRIPTIONS = {
     "LemasTotalReq": "จำนวนการร้องขอความช่วยเหลือทั้งหมด",
 }
 
-# ---- helper ----
 def predict(values):
     arr = np.array(values).reshape(1, -1)
     scaled = scaler.transform(arr)
@@ -156,27 +154,19 @@ def show_result(pred, crime_prob):
     st.progress(int(crime_prob))
     st.caption(f"Model: Logistic Regression + SMOTE | Crime probability: {crime_prob:.2f}%")
 
-# ---- Tabs ----
 tab1, tab2 = st.tabs(["🎲 Random Sample", "✏️ Manual Input"])
 
-# ============================================================
-# Tab 1: Random Sample
-# ============================================================
 with tab1:
     st.markdown("กดปุ่มเพื่อสุ่มข้อมูล community แล้วดูผล prediction")
-
     if st.button("🎲 สุ่มข้อมูลใหม่", use_container_width=True):
         seed = np.random.randint(0, 9999)
         np.random.seed(seed)
-        # สุ่มค่าในช่วง 0-1 (feature ของ us_crime ถูก normalize แล้ว)
         random_vals = np.random.uniform(0, 1, size=model.n_features_in_)
         st.session_state['random_vals'] = random_vals.tolist()
         st.session_state['random_seed'] = seed
 
     if 'random_vals' in st.session_state:
         vals = st.session_state['random_vals']
-
-        # แสดงตารางข้อมูลที่สุ่มได้
         st.subheader("📋 ข้อมูลที่สุ่มได้")
         display_df = pd.DataFrame({
             "Feature": FEATURE_NAMES,
@@ -184,21 +174,15 @@ with tab1:
             "ค่า": [f"{v:.4f}" for v in vals]
         })
         st.dataframe(display_df, use_container_width=True, height=400)
-
         if st.button("🔍 Predict จากข้อมูลนี้", use_container_width=True):
             pred, crime_prob = predict(vals)
             show_result(pred, crime_prob)
     else:
         st.info("👆 กดปุ่มสุ่มข้อมูลก่อนเพื่อเริ่มต้น")
 
-# ============================================================
-# Tab 2: Manual Input
-# ============================================================
 with tab2:
     st.markdown("กรอกค่า feature ทีละตัว (ค่าอยู่ในช่วง 0.0 – 1.0 เนื่องจาก normalize แล้ว)")
-
     manual_vals = []
-    # แบ่งเป็น 3 columns
     cols = st.columns(3)
     for i, fname in enumerate(FEATURE_NAMES):
         col = cols[i % 3]
@@ -215,7 +199,6 @@ with tab2:
                 key=f"manual_{i}"
             )
             manual_vals.append(val)
-
     st.divider()
     if st.button("🔍 Predict", use_container_width=True, key="predict_manual"):
         pred, crime_prob = predict(manual_vals)
