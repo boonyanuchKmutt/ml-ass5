@@ -45,4 +45,4 @@ if st.button("🔍 Predict", use_container_width=True):
     st.caption(f"Model: Logistic Regression + SMOTE | Confidence: {max(probability)*100:.2f}%")
 
 st.divider()
-st.markdown("**Assignment 5 | Imbalanced Data Classification | KMU
+st.markdown("**Assignment 5 | Imbalanced Data Classification | KMUTT**")
